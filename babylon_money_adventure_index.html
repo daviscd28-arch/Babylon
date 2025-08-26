@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Babylon: Path of the Bound Believer</title>
+  <meta name="description" content="A choose-your-path money adventure for young adults inspired by The Richest Man in Babylon." />
+  <style>
+    :root{
+      --bg:#0f172a; --panel:#111827; --ink:#f8fafc; --muted:#cbd5e1;
+      --accent:#fbbf24; --accent-2:#60a5fa; --danger:#ef4444; --success:#22c55e;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box} html,body{height:100%}
+    body{margin:0;background: radial-gradient(1200px 800px at 20% -10%, #1f2937 0%, #0f172a 60%);
+      color:var(--ink);font-family: ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+      line-height:1.45}
+    header{position:sticky;top:0;z-index:10;backdrop-filter: blur(6px);
+      background: rgba(15, 23, 42, .75);border-bottom:1px solid rgba(148,163,184,.25)}
+    .wrap{max-width:1100px;margin:0 auto;padding:16px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:38px;height:38px;border-radius:10px;background: conic-gradient(from 180deg at 50% 50%, var(--accent), #fff3, var(--accent-2));box-shadow: inset 0 0 20px #0007, var(--shadow)}
+    .brand h1{font-size:20px;margin:0}.sub{color:var(--muted);font-size:12px;margin-top:2px}
+    main{padding: 24px 16px 80px}
+    .grid{display:grid;gap:16px;grid-template-columns:320px 1fr}
+    @media (max-width:980px){.grid{grid-template-columns:1fr}}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border:1px solid rgba(148,163,184,.2);border-radius:16px;padding:16px;box-shadow:var(--shadow)}
+    .stats{display:grid;gap:12px}
+    .stat{background:#0b1224;border:1px solid rgba(148,163,184,.15);border-radius:12px;padding:10px 12px}
+    .stat h3{margin:0 0 6px;font-size:12px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+    .stat .row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+    .value{font-size:18px}
+    .bar{width:100%;height:10px;border-radius:999px;background:#0a0f1e;overflow:hidden;border:1px solid rgba(148,163,184,.15)}
+    .bar>span{display:block;height:100%;background:linear-gradient(90deg, var(--accent), var(--accent-2));width:0%}
+    .controls{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    button,select{background:#0b1224;border:1px solid rgba(148,163,184,.35);color:var(--ink);padding:10px 12px;border-radius:10px;cursor:pointer}
+    button:hover{border-color:var(--accent-2)} button.primary{background:linear-gradient(180deg,#1f2937,#0b1224);border-color:var(--accent-2);box-shadow:0 0 0 2px rgba(96,165,250,.15) inset}
+    button.danger{border-color:var(--danger);color:#fecaca}
+    .story{min-height:260px;display:flex;flex-direction:column;gap:14px}
+    .scene-title{font-size:18px;color:var(--accent);letter-spacing:.02em}
+    .scene-text{font-size:16px;color:#e5e7eb;white-space:pre-wrap}
+    .choices{display:grid;gap:10px}.choice{padding:12px 14px;border-radius:12px;background:#101827;border:1px solid rgba(148,163,184,.25);cursor:pointer}
+    .choice:hover{border-color:var(--accent)}
+    .badge{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;font-size:12px;border:1px solid rgba(148,163,184,.3);background:#0b1224;color:var(--muted)}
+    .row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+    .footer{margin-top:16px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;color:var(--muted);font-size:12px}
+    .hidden{display:none!important}.chip{padding:6px 10px;border:1px solid rgba(148,163,184,.25);border-radius:999px;font-size:12px;color:var(--muted);background:#0b1224}
+    .log{max-height:220px;overflow:auto;font-size:12px;color:#cbd5e1}.log p{margin:0 0 8px}
+    .notif{border-left:4px solid var(--accent);padding:10px 12px;background:#0b1224;border-radius:8px;border:1px solid rgba(148,163,184,.25)}
+    .pill{border:1px dashed rgba(148,163,184,.35);padding:8px 10px;border-radius:10px;font-size:12px;color:var(--muted)}
+    .hr{height:1px;background:linear-gradient(90deg,transparent,rgba(148,163,184,.35),transparent);margin:10px 0}
+    .credit{font-size:12px;color:#94a3b8}
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="brand">
+      <div class="logo" aria-hidden="true"></div>
+      <div>
+        <h1>Babylon: Path of the Bound Believer</h1>
+        <div class="sub">A choose-your-path money adventure • inspired by <em>The Richest Man in Babylon</em></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="grid">
+    <!-- Left: HUD -->
+    <aside class="card">
+      <div class="row">
+        <span class="badge">Young Hero: <strong>Bound Believer</strong></span>
+        <span class="badge">Nemesis: <strong>Regulator Rex</strong></span>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="stats" id="statsPanel">
+        <div class="stat">
+          <h3>Emergency Fund</h3>
+          <div class="row"><div class="value">$<span id="v-ef">0</span></div><div class="pill">Safety <span id="v-safety">0.0</span> mo</div></div>
+          <div class="bar"><span id="b-ef"></span></div>
+        </div>
+
+        <div class="stat">
+          <h3>Debt</h3>
+          <div class="row"><div class="value">$<span id="v-debt">0</span></div></div>
+          <div class="bar"><span id="b-debt"></span></div>
+        </div>
+
+        <div class="stat">
+          <h3>Invested</h3>
+          <div class="row"><div class="value">$<span id="v-invested">0</span></div></div>
+          <div class="bar"><span id="b-invested"></span></div>
+        </div>
+
+        <div class="stat">
+          <h3>Rex Pressure</h3>
+          <div class="row"><div class="value"><span id="v-rp">0</span> / 3</div><div class="pill">Guardrails lower RP</div></div>
+          <div class="bar"><span id="b-rp"></span></div>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <div>
+        <label for="chapterSel" class="chip">Choose a Chapter</label>
+        <select id="chapterSel">
+          <option value="chapter1">Chapter 1 — First Paycheck</option>
+          <option value="chapter2">Chapter 2 — College / Trade / Work</option>
+          <option value="chapter3">Chapter 3 — Wheels & Deals (Car)</option>
+          <option value="chapter4">Chapter 4 — First Apartment</option>
+          <option value="chapter5">Chapter 5 — Career & Skills</option>
+          <option value="chapter6">Chapter 6 — Marriage & Money</option>
+          <option value="chapter7">Chapter 7 — Home Purchase</option>
+          <option value="chapter8">Chapter 8 — Kids & Protection</option>
+          <option value="chapter9">Chapter 9 — Entrepreneur’s Fork</option>
+          <option value="chapter10">Chapter 10 — Storm & Recovery</option>
+          <option value="chapter11">Chapter 11 — Investing Mastery</option>
+          <option value="chapter12">Chapter 12 — Retirement & Legacy</option>
+        </select>
+        <div class="controls">
+          <button id="btnRestart" class="danger">Restart Chapter</button>
+          <button id="btnBack">Back</button>
+          <button id="btnExport">Export Save</button>
+          <button id="btnImport">Import Save</button>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="log kb" id="log"></div>
+
+      <div class="hr"></div>
+      <div class="credit">
+        Built for your website. All in one file. Embed via &lt;iframe&gt; or upload directly.
+      </div>
+    </aside>
+
+    <!-- Right: Story pane -->
+    <section class="card">
+      <div class="row">
+        <span class="chip">BB = Bound Believer</span>
+        <span class="chip">RR = Regulator Rex</span>
+        <span class="chip">House Rules: Save 10% • Budget • Invest • Avoid Hype • Grow Earning</span>
+      </div>
+
+      <div id="notif" class="notif hidden"></div>
+
+      <div class="story">
+        <div id="sceneTitle" class="scene-title"></div>
+        <div id="sceneText" class="scene-text"></div>
+        <div id="choices" class="choices"></div>
+      </div>
+
+      <div class="footer">
+        <div>Tip: Wisdom choices (Babylon’s Cures & Laws) improve your stats.</div>
+        <div>Press <span class="chip">B</span> to go back • <span class="chip">R</span> to restart chapter</div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<script>
+/** Narrative Engine **/
+const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+const fmt = (n) => Number(n).toLocaleString();
+const logEl = document.getElementById('log');
+const STORAGE_KEY = "babylon_path_save_v3";
+
+function pushLog(message){
+  const p = document.createElement('p');
+  const time = new Date().toLocaleTimeString();
+  p.textContent = `• ${message} (${time})`;
+  logEl.prepend(p);
+}
+function showNotif(text){
+  const notif = document.getElementById('notif');
+  notif.textContent = text;
+  notif.classList.remove('hidden');
+  setTimeout(()=>notif.classList.add('hidden'), 2200);
+}
+function save(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+function load(){
+  try { const s = JSON.parse(localStorage.getItem(STORAGE_KEY)||"null"); if(!s) return false; Object.assign(state,s); return true; } catch(e){ return false; }
+}
+
+/** Game Data **/
+const GAME = {
+  /* --- Chapter 1 (from earlier) --- */
+  chapter1: {
+    meta: { title: "Chapter 1 — First Paycheck, First Principles", start: "1", baselineExpenses: 480, intro: "It’s BB’s first payday. The world of money opens—and RR lurks in the fine print." },
+    scenes: {
+      "1":{title:"The Note",text:`Payday. BB finds a mentor’s note: “Start thy purse to fattening — 10%.”
+RR slides in flashing a watch: “Or… live a little.”`,choices:[
+        {label:"Pay yourself first (save $60 to EF).",next:"2",effects:{ef:+60}},
+        {label:"Spend now, save later (RR approves).",next:"5",effects:{rp:+1}}
+      ]},
+      "2":{title:"Seed Pouch",text:`You open a sub‑account named SEED. First deposit made.`,choices:[
+        {label:"Mini‑EF quest: aim for $300 (5 × $60).",next:"3",effects:{rp:-1}},
+        {label:"Split: $30 to EF & $30 to a low‑cost Roth IRA index fund.",next:"4",effects:{ef:+30,invested:+30,rp:-1}}
+      ]},
+      "3":{title:"Pop!",text:`Midway to $300, a tire blows — $90 repair.`,onEnter:(s)=>{
+        if (s.ef>=90){ s.ef-=90; pushLog("Emergency handled from EF: -$90."); return "6"; }
+        s.debt+=90; s.rp+=1; pushLog("EF short. Charged to card: +$90 debt. RP +1."); return "7";
+      },choices:[]},
+      "4":{title:"First Investment",text:`Your first $30 enters a broad index fund.
+RR, now an influencer: “This alt-coin doubles by Friday.”`,choices:[
+        {label:"Ignore hype. Stick to plan (Five Laws #3).",next:"6",effects:{rp:-1}},
+        {label:"Chase the coin (flip a coin).",next:"8",effects:{coinflip:true}}
+      ]},
+      "5":{title:"Vapor Money",text:`New shoes + phone plan burn the check. A $50 school trip fee appears.`,choices:[
+        {label:"Borrow from a friend (social debt).",next:"7",effects:{debt:+50,rp:+1}},
+        {label:"Ask parents; they require a simple zero‑based budget.",next:"9",effects:{rp:-1}}
+      ]},
+      "6":{title:"Momentum",text:`Auto‑saving works. Boss offers a Saturday shift (+$120/mo) if grades stay up.`,choices:[
+        {label:"Take it; earmark half to EF/investing (+$60 EF).",next:"10",effects:{ef:+60,rp:-1}},
+        {label:"Decline to protect rest/study (okay if school is heavy).",next:"11"}
+      ]},
+      "7":{title:"Snowball Spark",text:`Minimums feel small; interest isn’t. You learn the Debt Snowball.`,choices:[
+        {label:"Cut $30/mo & kill debt fast (clear current debt).",next:"11",effects:{clearDebt:true,rp:-1}},
+        {label:"Stick to minimums; debt lingers.",next:"12",effects:{rp:+1}}
+      ]},
+      "8":{title:"Burn Mark",text:`Speculation stings. Write your rule: “No get‑rich‑quick.”`,choices:[
+        {label:"Return to EF + index plan.",next:"11",effects:{rp:-1,normalizeInvest:true}},
+        {label:"Double down (flip again).",next:"12",effects:{coinflipAggressive:true}}
+      ]},
+      "9":{title:"The Budget Mirror",text:`Your first budget reveals $120 of “mystery money.”`,choices:[
+        {label:"Name it: 10% giving, 10% saving, rest EF (+$60 EF).",next:"10",effects:{ef:+60,rp:-1}},
+        {label:"Leave it unassigned — RR smiles.",next:"12",effects:{rp:+1}}
+      ]},
+      "10":{title:"Textbook Surprise",text:`A $120 textbook fee lands.`,onEnter:(s)=>{
+        if(s.ef>=120){ s.ef-=120; pushLog("Paid from EF: -$120."); return "13"; }
+        pushLog("EF short. Quick flyer‑delivery gig (+$60 toward EF)." ); s.ef+=60; return "14";
+      },choices:[]},
+      "11":{title:"Steady Steps",text:`EF grows toward $300; index contributions rise.
+Coach invites a scholarship workshop (Sat a.m.).`,choices:[
+        {label:"Attend; land a $500 grant next term.",next:"13",effects:{rp:-1}},
+        {label:"Sleep in — “later.”",next:"12",effects:{rp:+1}}
+      ]},
+      "12":{title:"Rex Event",text:`If RP ≥ 3, RR triggers junk fees. Otherwise it’s a wake‑up call.`,onEnter:(s)=>{
+        if(s.rp>=3){ const fee=45; const prev=s.ef; s.ef=Math.max(0,s.ef-fee); s.rp=Math.max(0,s.rp-1); pushLog(`Rex Event! Hidden fees -$${fee}. EF: ${fmt(prev)} → ${fmt(s.ef)}. RP -1.`); }
+        else{ pushLog("You feel the drag of drift. Reset with wisdom choices."); }
+        return "11";
+      },choices:[]},
+      "13":{title:"WIN — Purse Fattened",text:`By month 6 you aim for: EF $300, Debt $0, Invested $180+, Safety 0.6 mo, RP 0–1.
+
+Debrief: You obeyed Cures 1–3 and Laws 1,3,5; RR lost grip.`,choices:[
+        {label:"Continue to Debrief",next:"15"},
+        {label:"Restart Chapter 1",next:"__restart"}
+      ]},
+      "14":{title:"NEAR‑WIN",text:`You hustled to cover the fee but EF dipped.
+Commit to rebuild EF first, then invest monthly.`,choices:[
+        {label:"Finish strong",next:"13"}
+      ]},
+      "15":{title:"Debrief & Anchor",text:`“Plans of the diligent lead surely to abundance.” (Prov 21:5)
+Choose a habit to guard: Auto‑save on payday • Weekly 10‑min budget • Scam‑filter rule`,choices:[
+        {label:"Begin Chapter 2 — College / Trade / Work",next:"__go_chapter2"},
+        {label:"Replay Chapter 1",next:"__restart"}
+      ]}
+    }
+  },
+
+  /* --- Chapter 2 (from earlier) --- */
+  chapter2: {
+    meta: { title: "Chapter 2 — College / Trade / Work (ROI Paths)", start: "C2-1", baselineExpenses: 900, intro: "Acceptance letters and offers arrive. RR lurks as Prestige Pressure and EZ Loans." },
+    scenes: {
+      "C2-1":{title:"Fork in the Road",text:`You’re accepted to State U, a local Trade Program with paid apprenticeship, and have a full‑time job offer + night classes.`,choices:[
+        {label:"State U (on‑campus) — Net cost $22k/yr",next:"C2-uni"},
+        {label:"Commute + Community College 2 yrs → transfer",next:"C2-cc"},
+        {label:"Paid Apprenticeship (earn while you learn)",next:"C2-app"},
+        {label:"Full‑time work + accredited night cert",next:"C2-work"}
+      ]},
+      "C2-uni":{title:"Prestige Prime U",text:`Aid looks shiny, but private loans hide in fine print. RR: “Future You will crush it.”
+Expected starting salary $45k. Projected debt $70k.`,choices:[
+        {label:"Run ROI test (Debt ≤ 1× starting salary?)",next:"C2-uni-roi"},
+        {label:"Sign anyway (hype path).",next:"C2-uni-bad",effects:{rp:+1}}
+      ]},
+      "C2-uni-roi":{title:"ROI Reality",text:`Debt $70k vs starting salary $45k → Fails ROI guardrail.`,choices:[
+        {label:"Pivot to CC 2‑yr + transfer (save big).",next:"C2-cc",effects:{rp:-1}},
+        {label:"Ignore the red flag; proceed anyway.",next:"C2-uni-bad",effects:{rp:+1}}
+      ]},
+      "C2-uni-bad":{title:"EZ‑Loan Booth",text:`Variable rates, capitalized interest, and a swag card at orientation. RR grins.`,choices:[
+        {label:"Rewind before signing (last chance).",next:"C2-uni-roi",effects:{rp:-1}},
+        {label:"Commit. Take on $70k debt.",next:"C2-outcome-bad",effects:{debt:+70000,rp:+1}}
+      ]},
+      "C2-cc":{title:"Two‑Step Strategy",text:`Live cheap; work‑study; transfer to State U Jr year.
+Grants + work reduce loans to ~$12k total. Start investing $50/mo.`,choices:[
+        {label:"Lock this path.",next:"C2-outcome-good",effects:{debt:+12000,invested:+300,rp:-1}},
+        {label:"Let lifestyle creep eat savings.",next:"C2-creep",effects:{rp:+1}}
+      ]},
+      "C2-app":{title:"Earn While You Learn",text:`Apprenticeship $34k/yr; evening coursework. Open Roth IRA at 10%.`,choices:[
+        {label:"Strong start.",next:"C2-outcome-good",effects:{invested:+500,rp:-1}},
+        {label:"New truck on a long loan right away.",next:"C2-creep",effects:{debt:+15000,rp:+1}}
+      ]},
+      "C2-work":{title:"Work + Cert",text:`Full‑time now ($32k) + accredited 1‑yr night cert. Minimal loans.`,choices:[
+        {label:"Use employer tuition assist; keep expenses low.",next:"C2-outcome-good",effects:{invested:+300,rp:-1}},
+        {label:"Put cert on a high‑rate card.",next:"C2-creep",effects:{debt:+4000,rp:+1}}
+      ]},
+      "C2-creep":{title:"Lifestyle Creep (RR)",text:`Subscriptions, upgrades, and campus card fees nibble your future.`,onEnter:(s)=>{
+        s.rp=Math.min(3,s.rp+1);
+        if(s.rp>=3){ const fee=90; s.ef=Math.max(0,s.ef-fee); pushLog("Rex Event (C2): Hidden costs hit EF: -$"+fee); s.rp=Math.max(0,s.rp-1); }
+        return "C2-outcome-mid";
+      },choices:[]},
+      "C2-outcome-good":{title:"Outcome — Wise Path",text:`Win State: Debt manageable (≤ 0.5× salary), EF building, invest monthly, one marketable credential.`,choices:[
+        {label:"Proceed to Chapter 3 — Wheels & Deals",next:"__go_chapter3"},
+        {label:"Replay Chapter 2",next:"__restart"}
+      ]},
+      "C2-outcome-mid":{title:"Outcome — Mixed",text:`Progress, with some drag. Steer back with a budget reset and side income.`,choices:[
+        {label:"Lock in a wiser path and continue.",next:"C2-outcome-good",effects:{rp:-1}}
+      ]},
+      "C2-outcome-bad":{title:"Outcome — Debt Overload",text:`High loans vs starting pay. Payment strain triggers RR traps. Consider a retreat (transfer route, work‑study, apprenticeship).`,choices:[
+        {label:"Rewind and pick a wiser path.",next:"C2-1",effects:{rp:-1}}
+      ]}
+    }
+  },
+
+  /* --- Chapter 3 — Wheels & Deals (Car) --- */
+  chapter3: {
+    meta: { title: "Chapter 3 — Wheels & Deals (Car)", start: "C3-1", baselineExpenses: 1100, intro: "Transport unlocks jobs and school. RR arrives as Zero‑Down Zeke and Insurance Inchworm." },
+    scenes:{
+      "C3-1":{title:"Need for Wheels",text:`BB needs transport for work/school. Budget can spare $350/mo total car costs. RR: “Brand‑new rides impress.”`,choices:[
+        {label:"Cash car hunt (>$3,000 target + mechanic check).",next:"C3-2",effects:{rp:-1}},
+        {label:"Used car with small loan.",next:"C3-3"},
+        {label:"New car, long loan (84 months).",next:"C3-4",effects:{rp:+1}}
+      ]},
+      "C3-2":{title:"Cash Car Quest",text:`You build a sinking fund and bring a mechanic to inspect.`,choices:[
+        {label:"Buy reliable older model; insurance liability only.",next:"C3-5",effects:{ef:-3000}},
+        {label:"Skip inspection to “save time.”",next:"C3-6",effects:{rp:+1}}
+      ]},
+      "C3-3":{title:"Small Loan",text:`Loan $6,000 @ 6% for 36 months. Payment ~$183.`,choices:[
+        {label:"Keep total car costs ≤ 15% take‑home.",next:"C3-5",effects:{debt:+6000}},
+        {label:"Add upgrades (rims/audio).",next:"C3-7",effects:{debt:+6000,rp:+1}}
+      ]},
+      "C3-4":{title:"Zero‑Down Zeke",text:`RR: “$0 down! Just $499/mo for 84 months.”`,choices:[
+        {label:"Back out; math > marketing.",next:"C3-1",effects:{rp:-1}},
+        {label:"Sign the deal.",next:"C3-8",effects:{debt:+24000,rp:+1}}
+      ]},
+      "C3-5":{title:"Ownership & Ongoing Costs",text:`Fuel, maintenance, insurance.`,choices:[
+        {label:"Start a $50/mo maintenance sinking fund.",next:"C3-9",effects:{ef:+50}},
+        {label:"Hope nothing breaks.",next:"C3-6",effects:{rp:+1}}
+      ]},
+      "C3-6":{title:"Breakdown",text:`A $650 repair hits.`,onEnter:(s)=>{
+        if(s.ef>=650){ s.ef-=650; pushLog("Paid repair from sinking fund/EF: -$650."); return "C3-9"; }
+        s.debt+=650; s.rp=Math.min(3,s.rp+1); pushLog("No EF. Put on card: +$650 debt. RP +1."); return "C3-9";
+      },choices:[]},
+      "C3-7":{title:"Insurance Inchworm",text:`Premiums jump with mods.`,choices:[
+        {label:"Undo mods; shop insurance; raise deductible smartly.",next:"C3-9",effects:{rp:-1}},
+        {label:"Keep burning cash.",next:"C3-10",effects:{rp:+1}}
+      ]},
+      "C3-8":{title:"Payment Trap",text:`$499/mo strains budget; total costs > 20% income.`,choices:[
+        {label:"Sell to exit; buy a cash beater.",next:"C3-5",effects:{rp:-1}},
+        {label:"Keep and cut essentials.",next:"C3-10",effects:{rp:+1}}
+      ]},
+      "C3-9":{title:"Commuter Ready",text:`Transport secured without wrecking cash flow.`,choices:[
+        {label:"WIN: Costs ≤ 15% take‑home; EF intact.",next:"C3-11",effects:{rp:-1}},
+        {label:"It’s tight but workable.",next:"C3-10"}
+      ]},
+      "C3-10":{title:"Mixed Outcome",text:`You can still course‑correct: budget audit, sell extras, side income.`,choices:[
+        {label:"Reset and optimize.",next:"C3-11",effects:{rp:-1}}
+      ]},
+      "C3-11":{title:"Chapter Win",text:`Reliable transport secured; RR retreats.`,choices:[
+        {label:"Proceed to Chapter 4 — First Apartment",next:"__go_chapter4"},
+        {label:"Replay Chapter 3",next:"__restart"}
+      ]}
+    }
+  },
+
+  /* --- Chapter 4 — First Apartment --- */
+  chapter4:{
+    meta:{title:"Chapter 4 — First Apartment",start:"C4-1",baselineExpenses:1500,intro:"Keys to independence. RR appears as Application Add‑Ons and Furniture Traps."},
+    scenes:{
+      "C4-1":{title:"Keys & Costs",text:`Target rent ≤ 30% take‑home. Options appear.`,choices:[
+        {label:"Roommate plan; split rent and utilities.",next:"C4-2",effects:{rp:-1}},
+        {label:"Studio solo at upper limit.",next:"C4-3"},
+        {label:"Luxury place “first month free.”",next:"C4-4",effects:{rp:+1}}
+      ]},
+      "C4-2":{title:"Roommate Screening",text:`Vet for reliability & quiet hours.`,choices:[
+        {label:"Sign with clear house rules.",next:"C4-5"},
+        {label:"Skip screening; hope for best.",next:"C4-6",effects:{rp:+1}}
+      ]},
+      "C4-3":{title:"Tight Budget",text:`Rent at 30% leaves little buffer.`,choices:[
+        {label:"Negotiate rent; longer lease for discount.",next:"C4-5",effects:{rp:-1}},
+        {label:"Add subscriptions & decor now.",next:"C4-7",effects:{rp:+1}}
+      ]},
+      "C4-4":{title:"Application Add‑Ons (RR)",text:`Junk fees: “processing,” “key,” “convenience.”`,choices:[
+        {label:"Ask for fee sheet & legal caps; walk if shady.",next:"C4-5",effects:{rp:-1}},
+        {label:"Pay everything; sign blindly.",next:"C4-7",effects:{rp:+1}}
+      ]},
+      "C4-5":{title:"Move‑In Math",text:`Deposit, first month, utilities, basic furniture.`,choices:[
+        {label:"Budget essentials only; buy used.",next:"C4-8",effects:{ef:-800}},
+        {label:"Rent‑to‑own furniture.",next:"C4-7",effects:{rp:+1}}
+      ]},
+      "C4-6":{title:"Roommate Risk",text:`Missed rent; conflict.`,choices:[
+        {label:"Mediation; backup fund covers gap.",next:"C4-8",effects:{ef:-400,rp:-1}},
+        {label:"Let it slide; pay all yourself.",next:"C4-7",effects:{rp:+1}}
+      ]},
+      "C4-7":{title:"Budget Squeeze",text:`Cash flow thin; RR feeds on late fees.`,onEnter:(s)=>{
+        s.rp=Math.min(3,s.rp+1);
+        if(s.rp>=3){ const fee=60; s.ef=Math.max(0,s.ef-fee); pushLog("Rex Event (C4): Late/fee hits -$"+fee); s.rp--; }
+        return "C4-8";
+      },choices:[]},
+      "C4-8":{title:"Protection & Paperwork",text:`Renter’s insurance, move‑in photos, maintenance requests in writing.`,choices:[
+        {label:"Do it right.",next:"C4-9",effects:{rp:-1}},
+        {label:"Skip it all.",next:"C4-10",effects:{rp:+1}}
+      ]},
+      "C4-9":{title:"Chapter Win",text:`Rent ≤ 30%, EF intact, no predatory fees.`,choices:[
+        {label:"Proceed to Chapter 5 — Career & Skills",next:"__go_chapter5"},
+        {label:"Replay Chapter 4",next:"__restart"}
+      ]},
+      "C4-10":{title:"Mixed Outcome",text:`You can still stabilize with a sublet, budget cuts, and insurance added.`,choices:[
+        {label:"Reset and finish strong.",next:"C4-9",effects:{rp:-1}}
+      ]}
+    }
+  },
+
+  /* --- Chapter 5 — Career & Skills --- */
+  chapter5:{
+    meta:{title:"Chapter 5 — Career & Skills",start:"C5-1",baselineExpenses:1600,intro:"RR becomes the Comfort Cloud, whispering, “Stay the same.”"},
+    scenes:{
+      "C5-1":{title:"Fork: Drift or Drive",text:`Your role is fine but flat.`,choices:[
+        {label:"Create a 90‑day growth plan (cert, project, mentor).",next:"C5-2",effects:{rp:-1}},
+        {label:"Stay comfy; no plan.",next:"C5-3",effects:{rp:+1}}
+      ]},
+      "C5-2":{title:"Skill Stack",text:`Pick a cert or portfolio project with employer value.`,choices:[
+        {label:"Choose recognized credential.",next:"C5-4",effects:{invested:+200}},
+        {label:"Random course with no signal.",next:"C5-3",effects:{rp:+1}}
+      ]},
+      "C5-3":{title:"Comfort Cloud",text:`Months pass; reviews lukewarm.`,choices:[
+        {label:"Wake up; set measurable targets.",next:"C5-2",effects:{rp:-1}},
+        {label:"Blame the boss; do nothing.",next:"C5-7",effects:{rp:+1}}
+      ]},
+      "C5-4":{title:"Negotiation Prep",text:`Track impact; quantify wins.`,choices:[
+        {label:"Ask for raise/promo; bring receipts.",next:"C5-5",effects:{rp:-1}},
+        {label:"Stay silent; hope they notice.",next:"C5-7",effects:{rp:+1}}
+      ]},
+      "C5-5":{title:"Moment of Ask",text:`You present value clearly.`,choices:[
+        {label:"If no, request growth plan w/ timelines.",next:"C5-6"},
+        {label:"If yes, allocate raise to invest/EF.",next:"C5-8",effects:{invested:+300,ef:+300}}
+      ]},
+      "C5-6":{title:"Plan or Pivot",text:`Company offers plan; or you explore market.`,choices:[
+        {label:"Follow plan; check‑ins.",next:"C5-8",effects:{rp:-1}},
+        {label:"Quiet quit instead.",next:"C5-7",effects:{rp:+1}}
+      ]},
+      "C5-7":{title:"Stagnation",text:`Income flat; morale low; RR smirks.`,choices:[
+        {label:"Network weekly; apply intentionally.",next:"C5-8",effects:{rp:-1}},
+        {label:"Do nothing.",next:"C5-9",effects:{rp:+1}}
+      ]},
+      "C5-8":{title:"Momentum Return",text:`Cert + negotiation + networking lift income 10–20% within a year.`,choices:[
+        {label:"Chapter Win",next:"C5-10",effects:{rp:-1}}
+      ]},
+      "C5-9":{title:"Mixed Outcome",text:`Path still open; act now: portfolio, mentor, measurable targets.`,choices:[
+        {label:"Reset & finish.",next:"C5-8",effects:{rp:-1}}
+      ]},
+      "C5-10":{title:"Chapter Win",text:`Income up; RR’s cloud thins.`,choices:[
+        {label:"Proceed to Chapter 6 — Marriage & Money",next:"__go_chapter6"},
+        {label:"Replay Chapter 5",next:"__restart"}
+      ]}
+    }
+  },
+
+  /* --- Chapter 6 — Marriage & Money --- */
+  chapter6:{
+    meta:{title:"Chapter 6 — Marriage & Money",start:"C6-1",baselineExpenses:2000,intro:"Two become one team. RR attempts Secret Silos."},
+    scenes:{
+      "C6-1":{title:"Before “We Do”",text:`Talk money: debts, dreams, giving, guardrails.`,choices:[
+        {label:"Create joint vision & monthly budget.",next:"C6-2",effects:{rp:-1}},
+        {label:"Avoid the talk.",next:"C6-3",effects:{rp:+1}}
+      ]},
+      "C6-2":{title:"Transparency",text:`List all accounts & debts; set snowball order.`,choices:[
+        {label:"Open shared plan; keep some personal spending money.",next:"C6-4"},
+        {label:"Merge instantly without discussion.",next:"C6-3",effects:{rp:+1}}
+      ]},
+      "C6-3":{title:"Secret Silos (RR)",text:`Hidden debts & impulse buys surface later.`,choices:[
+        {label:"Reset with honesty & calendar budget date.",next:"C6-4",effects:{rp:-1}},
+        {label:"Keep secrets.",next:"C6-7",effects:{rp:+1}}
+      ]},
+      "C6-4":{title:"Safety First",text:`Build 3–6 months EF; choose % giving; set sinking funds.`,choices:[
+        {label:"Automate EF and giving.",next:"C6-5",effects:{ef:+500}},
+        {label:"Wing it.",next:"C6-7",effects:{rp:+1}}
+      ]},
+      "C6-5":{title:"Wedding & Home Setup",text:`Cost decisions loom.`,choices:[
+        {label:"Simple celebration within cash.",next:"C6-6",effects:{rp:-1}},
+        {label:"Finance the party.",next:"C6-7",effects:{debt:+5000,rp:+1}}
+      ]},
+      "C6-6":{title:"Unified Team",text:`Debt snowball progresses; joy > stuff.`,choices:[
+        {label:"Chapter Win",next:"C6-8"}
+      ]},
+      "C6-7":{title:"Stress Cycle",text:`Fights over money; RR grows.`,choices:[
+        {label:"Budget date night; transparency.",next:"C6-6",effects:{rp:-1}},
+        {label:"Ignore.",next:"C6-9",effects:{rp:+1}}
+      ]},
+      "C6-8":{title:"Chapter Win",text:`Shared vision; EF funded; giving plan active.`,choices:[
+        {label:"Proceed to Chapter 7 — Home Purchase",next:"__go_chapter7"},
+        {label:"Replay Chapter 6",next:"__restart"}
+      ]},
+      "C6-9":{title:"Mixed Outcome",text:`Not too late. Truth + plan → peace.`,choices:[
+        {label:"Reset & finish.",next:"C6-6",effects:{rp:-1}}
+      ]}
+    }
+  },
+
+  /* --- Chapter 7 — Home Purchase --- */
+  chapter7:{
+    meta:{title:"Chapter 7 — Home Purchase",start:"C7-1",baselineExpenses:2300,intro:"RR becomes Payment Pumper. Math beats hype."},
+    scenes:{
+      "C7-1":{title:"Buy vs Rent",text:`Run the math; consider timeframe.`,choices:[
+        {label:"Proceed only if staying 5+ years.",next:"C7-2",effects:{rp:-1}},
+        {label:"Buy “because adulting.”",next:"C7-3",effects:{rp:+1}}
+      ]},
+      "C7-2":{title:"Down Payment Plan",text:`Target 20% or solid PMI exit plan.`,choices:[
+        {label:"Save aggressively; side gigs.",next:"C7-4",effects:{ef:+100}},
+        {label:"Tiny down; stretch payment.",next:"C7-3",effects:{rp:+1}}
+      ]},
+      "C7-3":{title:"Payment Pumper (RR)",text:`Arms, points, and upgrades bloat payment.`,choices:[
+        {label:"Pause & re‑underwrite like a lender.",next:"C7-2",effects:{rp:-1}},
+        {label:"Proceed anyway.",next:"C7-6",effects:{rp:+1}}
+      ]},
+      "C7-4":{title:"Pre‑Approval & Budget",text:`Stick to ≤ 28/36 DTI. Include taxes/insurance/maintenance.`,choices:[
+        {label:"Stay under cap.",next:"C7-5",effects:{rp:-1}},
+        {label:"Stretch to max.",next:"C7-6",effects:{rp:+1}}
+      ]},
+      "C7-5":{title:"Inspection & Closing",text:`Hire inspector; negotiate fixes; budget closing costs.`,choices:[
+        {label:"Proceed to purchase within math.",next:"C7-7"},
+        {label:"Skip inspection.",next:"C7-6",effects:{rp:+1}}
+      ]},
+      "C7-6":{title:"House Poor",text:`Payment strain crowds out savings.`,choices:[
+        {label:"Downshift house or delay.",next:"C7-4",effects:{rp:-1}},
+        {label:"Ignore and hope.",next:"C7-9",effects:{rp:+1}}
+      ]},
+      "C7-7":{title:"Ownership",text:`Sinking fund for repairs 1%/yr; avoid upgrades until EF stable.`,choices:[
+        {label:"Chapter Win",next:"C7-8",effects:{rp:-1}},
+        {label:"Renovate on credit.",next:"C7-9",effects:{debt:+8000,rp:+1}}
+      ]},
+      "C7-8":{title:"Chapter Win",text:`Sustainable homeownership achieved.`,choices:[
+        {label:"Proceed to Chapter 8 — Kids & Protection",next:"__go_chapter8"},
+        {label:"Replay Chapter 7",next:"__restart"}
+      ]},
+      "C7-9":{title:"Mixed Outcome",text:`You can still refinance, sell, or reset budget.`,choices:[
+        {label:"Stabilize & finish.",next:"C7-8",effects:{rp:-1}}
+      ]}
+    }
+  },
+
+  /* --- Chapter 8 — Kids & Protection (expanded to 8 scenes) --- */
+  chapter8:{
+    meta:{title:"Chapter 8 — Kids & Protection",start:"C8-1",baselineExpenses:2600,intro:"RR whispers What‑If Whispers. Prepare, don’t fear."},
+    scenes:{
+      "C8-1":{title:"New Season",text:`Child on the way / adoption / guardianship.`,choices:[
+        {label:"Term life (10–12× income), will, beneficiaries locked.",next:"C8-2",effects:{rp:-1}},
+        {label:"Delay decisions.",next:"C8-6",effects:{rp:+1}}
+      ]},
+      "C8-2":{title:"Health Strategy",text:`Compare plans; HSA/FSA; emergency checklist.`,choices:[
+        {label:"Choose value plan; fund HSA.",next:"C8-3",effects:{ef:+200}},
+        {label:"Ignore details.",next:"C8-6",effects:{rp:+1}}
+      ]},
+      "C8-3":{title:"Childcare Math",text:`Daycare vs. family care vs. schedule swap.`,choices:[
+        {label:"Pick sustainable option; avoid debt.",next:"C8-4",effects:{rp:-1}},
+        {label:"Swipe the card.",next:"C8-6",effects:{rp:+1}}
+      ]},
+      "C8-4":{title:"Future Education",text:`529 vs. Roth IRA flexibility.`,choices:[
+        {label:"Small 529; prioritize retirement first.",next:"C8-5",effects:{invested:+200}},
+        {label:"Overfund 529; neglect retirement.",next:"C8-6",effects:{rp:+1}}
+      ]},
+      "C8-5":{title:"Chapter Win (Core)",text:`Protection in place; sustainable plan.`,choices:[
+        {label:"(Optional) Bonus protection steps",next:"C8-7"},
+        {label:"Proceed to Chapter 9 — Entrepreneur’s Fork",next:"__go_chapter9"},
+        {label:"Replay Chapter 8",next:"__restart"}
+      ]},
+      "C8-6":{title:"Mixed/Bad Outcome",text:`RR thrives on procrastination. You can still act—term life + will + budget.`,choices:[
+        {label:"Act now & stabilize.",next:"C8-5",effects:{rp:-1}}
+      ]},
+      "C8-7":{title:"Bonus: Risk Shields",text:`Add disability insurance; consider umbrella liability. Update beneficiaries annually.`,choices:[
+        {label:"Add shields (wise).",next:"C8-8",effects:{rp:-1}},
+        {label:"Skip for now.",next:"C8-8"}
+      ]},
+      "C8-8":{title:"Guardians & Documents",text:`Choose guardians; store docs; share access with trusted family.`,choices:[
+        {label:"Finish and continue.",next:"__go_chapter9",effects:{rp:-1}},
+        {label:"Replay Chapter 8",next:"__restart"}
+      ]}
+    }
+  },
+
+  /* --- Chapter 9 — Entrepreneur’s Fork --- */
+  chapter9:{
+    meta:{title:"Chapter 9 — Entrepreneur’s Fork",start:"C9-1",baselineExpenses:2600,intro:"RR becomes Shiny Stack: tools before customers. Validate first."},
+    scenes:{
+      "C9-1":{title:"Idea Spark",text:`You see a problem worth solving.`,choices:[
+        {label:"Define customer & pain; write 1‑page plan.",next:"C9-2",effects:{rp:-1}},
+        {label:"Buy gear & logos first.",next:"C9-3",effects:{rp:+1}}
+      ]},
+      "C9-2":{title:"Pre‑Sell Test",text:`Can you collect deposits or letters of intent?`,choices:[
+        {label:"Pre‑sell 5 customers.",next:"C9-4",effects:{ef:+300}},
+        {label:"Build quietly without feedback.",next:"C9-3",effects:{rp:+1}}
+      ]},
+      "C9-3":{title:"Shiny Stack (RR)",text:`Subscriptions pile up; no revenue.`,choices:[
+        {label:"Cancel tools; talk to customers.",next:"C9-2",effects:{rp:-1}},
+        {label:"Double down on gear.",next:"C9-7",effects:{rp:+1}}
+      ]},
+      "C9-4":{title:"Runway & Risk Cap",text:`Set a dollar/time cap; protect EF.`,choices:[
+        {label:"LLC/DBA, business account, basics.",next:"C9-5",effects:{rp:-1}},
+        {label:"Mix personal/business money.",next:"C9-7",effects:{rp:+1}}
+      ]},
+      "C9-5":{title:"Go‑to‑Market",text:`Launch MVP; deliver; iterate from feedback.`,choices:[
+        {label:"Ship weekly; track churn and referrals.",next:"C9-6",effects:{invested:+200}},
+        {label:"Wait for perfect.",next:"C9-7",effects:{rp:+1}}
+      ]},
+      "C9-6":{title:"Revenue Arrives",text:`First $1k MRR or steady bookings.`,choices:[
+        {label:"Chapter Win (sane growth).",next:"C9-8",effects:{rp:-1}}
+      ]},
+      "C9-7":{title:"Burn & Blur",text:`Bills burn cash; no customers.`,choices:[
+        {label:"Retrench to validated steps.",next:"C9-4",effects:{rp:-1}},
+        {label:"Keep spending.",next:"C9-9",effects:{rp:+1}}
+      ]},
+      "C9-8":{title:"Chapter Win",text:`Validated business with risk capped.`,choices:[
+        {label:"Proceed to Chapter 10 — Storm & Recovery",next:"__go_chapter10"},
+        {label:"Replay Chapter 9",next:"__restart"}
+      ]},
+      "C9-9":{title:"Mixed Outcome",text:`Consider pausing venture; keep learning; restart with validation.`,choices:[
+        {label:"Reset & finish.",next:"C9-8",effects:{rp:-1}}
+      ]}
+    }
+  },
+
+  /* --- Chapter 10 — Storm & Recovery --- */
+  chapter10:{
+    meta:{title:"Chapter 10 — Storm & Recovery",start:"C10-1",baselineExpenses:2400,intro:"RR becomes Panic Peddler. Steady hands win."},
+    scenes:{
+      "C10-1":{title:"The Hit",text:`Job loss / hours cut / surprise medical bill.`,choices:[
+        {label:"Breathe. Activate written plan.",next:"C10-2",effects:{rp:-1}},
+        {label:"Panic & freeze.",next:"C10-3",effects:{rp:+1}}
+      ]},
+      "C10-2":{title:"First 48 Hours",text:`Freeze extras; apply benefits; list minimum payments.`,choices:[
+        {label:"Cut spending to essentials; contact lenders.",next:"C10-4",effects:{ef:-100}},
+        {label:"Hope it passes.",next:"C10-3",effects:{rp:+1}}
+      ]},
+      "C10-3":{title:"Panic Peddler (RR)",text:`Bad decisions cluster under stress.`,choices:[
+        {label:"Write 3 calls to make now.",next:"C10-2",effects:{rp:-1}},
+        {label:"Ignore and borrow more.",next:"C10-6",effects:{debt:+1000,rp:+1}}
+      ]},
+      "C10-4":{title:"Negotiation",text:`Ask for hardship plans; pause interest/fees; set payment plan.`,choices:[
+        {label:"Sell unused items; small gigs.",next:"C10-5",effects:{ef:+300}},
+        {label:"Do nothing.",next:"C10-6",effects:{rp:+1}}
+      ]},
+      "C10-5":{title:"Bridge Built",text:`You gain 2+ months runway.`,choices:[
+        {label:"Chapter Win",next:"C10-7",effects:{rp:-1}}
+      ]},
+      "C10-6":{title:"Spiral Risk",text:`High‑interest debt grows.`,choices:[
+        {label:"Reset & take calm steps.",next:"C10-4",effects:{rp:-1}},
+        {label:"Keep spiraling.",next:"C10-8",effects:{rp:+1}}
+      ]},
+      "C10-7":{title:"Chapter Win",text:`Crisis contained; path to recovery.`,choices:[
+        {label:"Proceed to Chapter 11 — Investing Mastery",next:"__go_chapter11"},
+        {label:"Replay Chapter 10",next:"__restart"}
+      ]},
+      "C10-8":{title:"Mixed Outcome",text:`Not too late—consider nonprofit counseling, fresh budget, targeted income.`,choices:[
+        {label:"Stabilize & finish.",next:"C10-7",effects:{rp:-1}}
+      ]}
+    }
+  },
+
+  /* --- Chapter 11 — Investing Mastery (expanded to 8 scenes) --- */
+  chapter11:{
+    meta:{title:"Chapter 11 — Investing Mastery",start:"C11-1",baselineExpenses:2600,intro:"RR becomes Hot Tip Hydra. Principles > predictions."},
+    scenes:{
+      "C11-1":{title:"Map the Goal",text:`Retirement, mid‑term goals, and giving.`,choices:[
+        {label:"Write an IPS (Investment Policy Statement).",next:"C11-2",effects:{rp:-1}},
+        {label:"Wing it by vibes.",next:"C11-3",effects:{rp:+1}}
+      ]},
+      "C11-2":{title:"Account Order",text:`Match → HSA → Roth/Traditional → Taxable.`,choices:[
+        {label:"Automate contributions.",next:"C11-4",effects:{invested:+300}},
+        {label:"Manual when “extra.”",next:"C11-3",effects:{rp:+1}}
+      ]},
+      "C11-3":{title:"Hot Tip Hydra (RR)",text:`Rotating gurus and memes.`,choices:[
+        {label:"Three‑fund core; ignore noise.",next:"C11-4",effects:{rp:-1}},
+        {label:"Chase shiny sectors.",next:"C11-7",effects:{rp:+1}}
+      ]},
+      "C11-4":{title:"Allocation & Rebalance",text:`Pick % stocks/bonds; annual rebalance.`,choices:[
+        {label:"Low‑cost index funds; <0.20% fees.",next:"C11-5",effects:{rp:-1}},
+        {label:"High‑fee funds “with alpha.”",next:"C11-7",effects:{rp:+1}},
+        {label:"(Optional) Optimize taxes (location/harvesting).",next:"C11-8"}
+      ]},
+      "C11-5":{title:"Behavior Beats Brilliance",text:`Stay the course; automate; diversify.`,choices:[
+        {label:"Continue discipline.",next:"C11-6"},
+        {label:"Time the market.",next:"C11-7",effects:{rp:+1}}
+      ]},
+      "C11-6":{title:"Chapter Win",text:`You invest simply and steadily; RR shrinks.`,choices:[
+        {label:"Proceed to Chapter 12 — Retirement & Legacy",next:"__go_chapter12"},
+        {label:"Replay Chapter 11",next:"__restart"}
+      ]},
+      "C11-7":{title:"Mixed/Bad Outcome",text:`Costs, taxes, and churn erode returns.`,choices:[
+        {label:"Return to IPS & low‑cost core.",next:"C11-6",effects:{rp:-1}}
+      ]},
+      "C11-8":{title:"Advanced: Tax Location & TLH",text:`Place bonds in tax‑deferred, stocks in taxable/Roth as fits; harvest losses without changing exposure.`,choices:[
+        {label:"Apply carefully; avoid wash sales.",next:"C11-6",effects:{rp:-1}},
+        {label:"Trade frequently anyway.",next:"C11-7",effects:{rp:+1}}
+      ]}
+    }
+  },
+
+  /* --- Chapter 12 — Retirement & Legacy (expanded to 9 scenes) --- */
+  chapter12:{
+    meta:{title:"Chapter 12 — Retirement & Legacy",start:"C12-1",baselineExpenses:2400,intro:"RR pushes Lifestyle Creep; wisdom plans the long game."},
+    scenes:{
+      "C12-1":{title:"Time Horizon",text:`Estimate needs; consider pensions/SS/portfolio.`,choices:[
+        {label:"Map drawdown order.",next:"C12-2",effects:{rp:-1}},
+        {label:"Just wing withdrawals.",next:"C12-5",effects:{rp:+1}}
+      ]},
+      "C12-2":{title:"Drawdown Order",text:`Tax‑smart: taxable → tax‑deferred → Roth (flex).`,choices:[
+        {label:"Create a simple rule‑based plan.",next:"C12-3",effects:{rp:-1}},
+        {label:"Random pulls.",next:"C12-5",effects:{rp:+1}},
+        {label:"Plan RMDs & Roth conversion windows.",next:"C12-9"}
+      ]},
+      "C12-3":{title:"Social Security Timing",text:`Estimate at 62/67/70; longevity & work plans.`,choices:[
+        {label:"Coordinate with spouse; pick sustainable timing.",next:"C12-4"},
+        {label:"File early without math.",next:"C12-5",effects:{rp:+1}},
+        {label:"Consider Medicare/healthcare angles.",next:"C12-8"}
+      ]},
+      "C12-4":{title:"Legacy & Giving",text:`Beneficiaries, will/trust, charitable plan, letters to heirs.`,choices:[
+        {label:"Finalize documents; communicate wishes.",next:"C12-6",effects:{rp:-1}},
+        {label:"Procrastinate.",next:"C12-5",effects:{rp:+1}}
+      ]},
+      "C12-5":{title:"Lifestyle Creep (RR)",text:`Spending rises to meet wealth; no plan.`,choices:[
+        {label:"Re‑budget; set guardrails.",next:"C12-6",effects:{rp:-1}},
+        {label:"Keep drifting.",next:"C12-7",effects:{rp:+1}}
+      ]},
+      "C12-6":{title:"Chapter Win",text:`Sustainable retirement with a giving legacy.`,choices:[
+        {label:"Replay the Journey from Chapter 1",next:"__go_chapter1"},
+        {label:"Replay Chapter 12",next:"__restart"}
+      ]},
+      "C12-7":{title:"Mixed Outcome",text:`It’s not too late—tighten plan, align family, give with intention.`,choices:[
+        {label:"Reset & finish.",next:"C12-6",effects:{rp:-1}}
+      ]},
+      "C12-8":{title:"Healthcare in Retirement",text:`Medicare Parts A/B/D; Medigap vs Advantage; IRMAA brackets.`,choices:[
+        {label:"Pick plan with TCO math; watch IRMAA.",next:"C12-6",effects:{rp:-1}},
+        {label:"Ignore; pay surprises later.",next:"C12-5",effects:{rp:+1}}
+      ]},
+      "C12-9":{title:"RMDs & Roth Conversions",text:`Use low‑income years before RMDs to convert. Coordinate taxes and giving (QCDs).`,choices:[
+        {label:"Execute plan prudently.",next:"C12-6",effects:{rp:-1}},
+        {label:"Random conversions.",next:"C12-5",effects:{rp:+1}}
+      ]}
+    }
+  }
+};
+
+/* Engine State */
+let state = { chapterKey:"chapter1", sceneId:"1", ef:0, debt:0, invested:0, rp:0, expenses:480, history:[] };
+
+// DOM
+const chapterSel = document.getElementById('chapterSel');
+const sceneTitle = document.getElementById('sceneTitle');
+const sceneText = document.getElementById('sceneText');
+const choicesEl = document.getElementById('choices');
+const vEf = document.getElementById('v-ef');
+const vDebt = document.getElementById('v-debt');
+const vInv = document.getElementById('v-invested');
+const vRp = document.getElementById('v-rp');
+const vSaf = document.getElementById('v-safety');
+const bEf = document.getElementById('b-ef');
+const bDebt = document.getElementById('b-debt');
+const bInv = document.getElementById('b-invested');
+const bRp = document.getElementById('b-rp');
+
+function updateStats(){
+  vEf.textContent = fmt(state.ef);
+  vDebt.textContent = fmt(state.debt);
+  vInv.textContent = fmt(state.invested);
+  vRp.textContent = state.rp;
+  const safety = state.expenses ? (state.ef / state.expenses) : 0;
+  vSaf.textContent = safety.toFixed(1);
+  const efPct = clamp(state.ef / 600 * 100, 0, 100);
+  const debtPct = clamp(state.debt / 5000 * 100, 0, 100);
+  const invPct = clamp(state.invested / 1000 * 100, 0, 100);
+  const rpPct = clamp(state.rp / 3 * 100, 0, 100);
+  bEf.style.width = efPct + "%"; bDebt.style.width = debtPct + "%"; bInv.style.width = invPct + "%"; bRp.style.width = rpPct + "%";
+}
+
+function applyEffects(effects){
+  if(!effects) return;
+  if ('ef' in effects) state.ef = Math.max(0, state.ef + effects.ef);
+  if ('debt' in effects) state.debt = Math.max(0, state.debt + effects.debt);
+  if ('invested' in effects) state.invested = Math.max(0, state.invested + effects.invested);
+  if ('rp' in effects) state.rp = clamp(state.rp + effects.rp, 0, 99);
+  if (effects.clearDebt) state.debt = 0;
+  if (effects.normalizeInvest) state.invested = Math.max(0, state.invested);
+  if (effects.coinflip){
+    const heads = Math.random() < 0.5;
+    if (heads){ state.invested = Math.max(0, state.invested + 30); pushLog("Coin flip: Heads. +$30 invested."); }
+    else { state.invested = Math.max(0, state.invested - 30); state.rp = clamp(state.rp + 1, 0, 99); pushLog("Coin flip: Tails. -$30 invested. RP +1."); }
+  }
+  if (effects.coinflipAggressive){
+    const heads = Math.random() < 0.5;
+    if (heads){ pushLog("Aggressive flip: Heads. You barely escape worse outcomes."); }
+    else { state.rp = clamp(state.rp + 1, 0, 99); pushLog("Aggressive flip: Tails. RR tightens grip (RP +1)."); }
+  }
+}
+
+function render(){
+  save();
+  updateStats();
+  const ch = GAME[state.chapterKey];
+  const scene = ch.scenes[state.sceneId];
+  if (!scene){ sceneTitle.textContent="Missing Scene"; sceneText.textContent="This scene id does not exist."; choicesEl.innerHTML=""; return; }
+
+  // Auto-route if onEnter exists
+  if (scene.onEnter){
+    const nextId = scene.onEnter(state);
+    updateStats();
+    state.history.push({chapter:state.chapterKey,scene:state.sceneId});
+    state.sceneId = nextId;
+    render();
+    return;
+  }
+
+  sceneTitle.textContent = scene.title || "";
+  sceneText.textContent = scene.text || "";
+  choicesEl.innerHTML = "";
+  (scene.choices || []).forEach(c=>{
+    const btn = document.createElement('button');
+    btn.className = "choice";
+    btn.textContent = c.label;
+    btn.addEventListener('click', ()=>{
+      state.history.push({chapter:state.chapterKey,scene:state.sceneId});
+      applyEffects(c.effects);
+      if (c.next === "__restart"){ resetChapter(false); return; }
+      if (c.next && c.next.startsWith("__go_")){
+        const target = c.next.replace("__go_","");
+        const map = {
+          chapter1:"chapter1", chapter2:"chapter2", chapter3:"chapter3", chapter4:"chapter4",
+          chapter5:"chapter5", chapter6:"chapter6", chapter7:"chapter7", chapter8:"chapter8",
+          chapter9:"chapter9", chapter10:"chapter10", chapter11:"chapter11", chapter12:"chapter12"
+        };
+        if (map[target]){ gotoChapter(map[target], true); return; }
+      }
+      state.sceneId = c.next;
+      render();
+    });
+    choicesEl.appendChild(btn);
+  });
+}
+
+function resetChapter(keepStats=false){
+  const ch = GAME[state.chapterKey];
+  state.sceneId = ch.meta.start;
+  state.expenses = ch.meta.baselineExpenses || state.expenses;
+  state.history = [];
+  if(!keepStats){ state.ef=0; state.debt=0; state.invested=0; state.rp=0; }
+  updateStats(); render(); pushLog(`Restarted ${ch.meta.title}.`);
+}
+function gotoChapter(key, keepStats=false){
+  state.chapterKey = key;
+  chapterSel.value = key;
+  resetChapter(keepStats);
+  showNotif(GAME[key].meta.intro || "New chapter");
+}
+
+// Controls
+document.getElementById('btnRestart').addEventListener('click', ()=> resetChapter(false));
+document.getElementById('btnBack').addEventListener('click', ()=>{
+  const last = state.history.pop();
+  if (!last){ showNotif("No previous scene."); return; }
+  state.chapterKey = last.chapter;
+  state.sceneId = last.scene;
+  render();
+});
+document.getElementById('btnExport').addEventListener('click', ()=>{
+  const payload = btoa(unescape(encodeURIComponent(JSON.stringify(state))));
+  navigator.clipboard.writeText(payload).then(()=> showNotif("Save copied. Paste it somewhere safe."));
+});
+document.getElementById('btnImport').addEventListener('click', ()=>{
+  const payload = prompt("Paste your previously exported save code:");
+  if(!payload) return;
+  try{ const json = JSON.parse(decodeURIComponent(escape(atob(payload)))); Object.assign(state,json); render(); showNotif("Save imported."); }
+  catch(e){ alert("Import failed. The code seems invalid."); }
+});
+chapterSel.addEventListener('change', e=> gotoChapter(e.target.value, true));
+
+// Init
+(function init(){
+  const loaded = load();
+  if (!GAME[state.chapterKey]) state.chapterKey="chapter1";
+  if (!loaded){ const ch = GAME[state.chapterKey]; state.sceneId = ch.meta.start; state.expenses = ch.meta.baselineExpenses; }
+  render(); pushLog("Game loaded.");
+})();
+</script>
+</body>
+</html>
